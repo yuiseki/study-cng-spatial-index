@@ -64,3 +64,37 @@ FXY_CAP  = 1000    # max total 3D cells per building
 # Parquet row group sizes to test
 ROW_GROUP_SIZES = [10_000, 50_000, 100_000]
 DEFAULT_ROW_GROUP_SIZE = 50_000
+
+# -----------------------------------------------------------------------
+# 2D index parameters
+# -----------------------------------------------------------------------
+H3_RESOLUTIONS    = [7, 8, 9, 10]
+GEOHASH_PRECISIONS = [5, 6, 7, 8]
+QUADKEY_ZOOMS     = [15, 17, 19]
+MORTON2D_XY_Z     = 19   # tile zoom used for local_x/local_y normalization
+
+# Raw point export
+POINTS_GEOJSON = RAW_DIR / "points_taito.geojson"
+
+# 2D cell Parquet tables (points)
+CELLS_H3_POINTS_PARQUET       = PARQUET_DIR / "cells_h3_points.parquet"
+CELLS_GEOHASH_POINTS_PARQUET  = PARQUET_DIR / "cells_geohash_points.parquet"
+CELLS_QUADKEY_POINTS_PARQUET  = PARQUET_DIR / "cells_quadkey_points.parquet"
+CELLS_MORTON2D_POINTS_PARQUET = PARQUET_DIR / "cells_morton2d_points.parquet"
+
+# 2D cell Parquet tables (polygons / buildings)
+CELLS_H3_POLY_PARQUET       = PARQUET_DIR / "cells_h3_poly.parquet"
+CELLS_GEOHASH_POLY_PARQUET  = PARQUET_DIR / "cells_geohash_poly.parquet"
+CELLS_QUADKEY_POLY_PARQUET  = PARQUET_DIR / "cells_quadkey_poly.parquet"
+CELLS_MORTON2D_POLY_PARQUET = PARQUET_DIR / "cells_morton2d_poly.parquet"
+
+# Flat bbox-columns GeoParquet (for DuckDB spatial + RTREE bench)
+BBOX_POINTS_GEOPARQUET = PREPARED_DIR / "points_with_bbox.geoparquet"
+BBOX_POLY_GEOPARQUET   = PREPARED_DIR / "poly_with_bbox.geoparquet"
+
+# Viewport/radius bench parameters
+VIEWPORT_LON_CENTER = 139.785
+VIEWPORT_LAT_CENTER = 35.713
+VIEWPORT_SIZES_DEG  = [0.01, 0.05, 0.1]   # ~1 km, ~5 km, ~10 km sides
+RADIUS_M_LIST       = [500, 1000, 2000]
+KNN_K               = 10

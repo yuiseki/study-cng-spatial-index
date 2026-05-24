@@ -1,4 +1,4 @@
-.PHONY: install prepare bench-corridor bench-route summarize all clean
+.PHONY: install prepare prepare-2d bench-corridor bench-route bench-2d summarize all clean
 
 install:
 	uv sync
@@ -27,5 +27,15 @@ bench-rg:
 	uv run python scripts/build_occupancy_cells.py --row-group-size $(RG_SIZE)
 	uv run python scripts/run_corridor_bench.py
 
+prepare-2d:
+	uv run python scripts/prepare_osm_points.py
+	uv run python scripts/build_2d_cells.py
+
+bench-2d:
+	uv run python scripts/run_2d_bench.py
+
+all-2d: prepare-2d bench-2d
+
 clean:
-	rm -rf data/raw/*.geojson data/prepared/*.parquet data/parquet/*.parquet data/results/
+	rm -rf data/raw/*.geojson data/prepared/*.parquet data/prepared/*.geoparquet \
+	       data/parquet/*.parquet data/results/
