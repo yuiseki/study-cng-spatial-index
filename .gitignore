@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Generated data (regenerate with `make prepare`)
+data/raw/*.geojson
+data/prepared/*.parquet
+data/prepared/*.geoparquet
+data/parquet/*.parquet
+data/parquet/*.json
+data/results/
+
+# Keep results directory placeholder
+!data/results/.gitkeep
+!data/raw/.gitkeep
+!data/prepared/.gitkeep
+!data/parquet/.gitkeep
