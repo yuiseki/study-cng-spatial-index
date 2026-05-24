@@ -52,6 +52,39 @@ PostgreSQL / PostGIS 上で GiST / SP-GiST / BRIN / H3 / GeoHash / Q3C / HEALPix
 - **viewport**: 矩形範囲内の点・建物を返す（0.01° / 0.05° / 0.1° 幅）
 - **radius**: 中心点から半径 r 内の点（H3 grid_disk 近似）（500 m / 1,000 m / 2,000 m）
 
+### 実測結果サマリ（台東区 OSM 25,821 点 / 36,521 建物）
+
+#### viewport_points（vp=0.01° ≈ 1 km 四方）
+
+| scheme | resolution | n_cells | count | avg_ms |
+|--------|-----------|---------|-------|--------|
+| **bbox_cols** | — | — | **3,400** | **2.2** |
+| Morton2D | z=19 | 8 ranges | 3,874 | 2.0 |
+| H3 | res=9 | 10 cells | 3,022 | 2.1 |
+| GeoHash | prec=7 | 72 cells | 4,344 | 2.7 |
+| Quadkey | z=17 | 24 cells | 4,641 | 2.4 |
+
+#### viewport_points（vp=0.10° ≈ 10 km 四方）— IN 述語崩壊ゾーン
+
+| scheme | resolution | n_cells | avg_ms |
+|--------|-----------|---------|--------|
+| **bbox_cols** | — | — | **3.9** |
+| Quadkey | z=15 | 132 cells | 5.6 |
+| Morton2D | z=19 | 252 ranges | 9.6 |
+| GeoHash | prec=7 | 5,402 cells | 20.9 |
+| H3 | res=10 | 7,253 cells | 28.3 |
+| Quadkey | z=19 | 26,460 cells | **92.3** |
+| GeoHash | prec=8 | 170,236 cells | **538.7** |
+
+#### 結論
+
+1. **bbox-cols が最速・最正確。** viewport サイズに関わらず 2–5 ms で安定。
+2. **IN 述語は ~500 cells 超で線形劣化する。** 大 viewport × 高解像度で GeoHash prec=8: 539 ms、Quadkey z=19: 92 ms に到達。
+3. **各 scheme のスイートスポット:** H3 res=8–9 / GeoHash prec=6–7 / Quadkey z=15–17 が 2–11 ms 以内。
+4. **Morton2D（BETWEEN ranges）は IN overhead を回避でき最大 252 ranges で 10 ms 以内。** 3D Morton より大幅に良好。
+
+詳細: [`experiments/duckdb-geoparquet-2d/README.md`](experiments/duckdb-geoparquet-2d/README.md)
+
 ### 実行方法
 
 ```bash

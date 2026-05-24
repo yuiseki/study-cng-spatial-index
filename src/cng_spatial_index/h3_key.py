@@ -26,7 +26,15 @@ def h3_encode_bbox(
             [minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy], [minx, miny]
         ]],
     }
-    return list(h3.geo_to_cells(geojson, resolution))
+    cells = list(h3.geo_to_cells(geojson, resolution))
+    # geo_to_cells uses inner containment (cell center must be inside polygon).
+    # For polygons smaller than an H3 cell, fall back to the centroid cell so
+    # every feature is indexed at every resolution.
+    if not cells:
+        lat = (miny + maxy) / 2
+        lon = (minx + maxx) / 2
+        cells = [h3.latlng_to_cell(lat, lon, resolution)]
+    return cells
 
 
 def h3_encode_polygon_geojson(geojson_polygon: dict, resolution: int) -> list[str]:
